@@ -29,7 +29,7 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
       .num_segments = 0, //pulseCount*2,
    };
 	
-	// demonstrate use of vibesPatternPWM_addpulse
+   // demonstrate use of vibesPatternPWM_addpulse
    vibesPatternPWM_addpulse(&pwmPat, 300, 1);
    vibesPatternPWM_addpulse(&pwmPat, 300, 5);
    vibesPatternPWM_addpulse(&pwmPat, 300, 2);

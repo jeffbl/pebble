@@ -32,52 +32,52 @@ uint32_t pat_pulses[MAX_PATTERN_SIZE]; //todo:  dynamically calculate max to be 
  * Takes a VibePattern with the duration in the pwm format and adds on new pulses for the passed duration and intensity
  */
 static VibePattern * pwm_vibrate_add_pulse(VibePattern *pat, int duration, int intensity) {
-	intensity *= PWM_PULSE_PERIOD_MULTIPLIER;		// adjust by multiplier if it is not using the minimum intensity
-	int pulses = (duration/PWM_PULSE_PERIOD);		// one pulse == one on/off cycle
-	//APP_LOG(APP_LOG_LEVEL_DEBUG, "pwmVibrate intensity %d duration %d pulses %d", intensity, duration, pulses);
-	
-	if(pat->num_segments > MAX_PATTERN_SIZE-2) {
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "pwmVibrate pattern is full - ignoring adding more pulses");
-		return pat;
-	}
+   intensity *= PWM_PULSE_PERIOD_MULTIPLIER;      // adjust by multiplier if it is not using the minimum intensity
+   int pulses = (duration/PWM_PULSE_PERIOD);      // one pulse == one on/off cycle
+   //APP_LOG(APP_LOG_LEVEL_DEBUG, "pwmVibrate intensity %d duration %d pulses %d", intensity, duration, pulses);
+   
+   if(pat->num_segments > MAX_PATTERN_SIZE-2) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "pwmVibrate pattern is full - ignoring adding more pulses");
+      return pat;
+   }
 
-	if(intensity == 0) { // pause - we don't have to PWM that!
-		pat_pulses[pat->num_segments++] = 0;
-		pat_pulses[pat->num_segments++] = duration;
-	}
-	else if (intensity >= 10) { //intensity is at *or over* maximum, don't need to PWM that either
-		pat_pulses[pat->num_segments++] = duration;
-		pat_pulses[pat->num_segments++] = 0;
-	}
-	else{ //have to actually use PWM to fulfil the request
-		for(int i=0; i<pulses && pat->num_segments<MAX_PATTERN_SIZE-2; i++) {
-			pat_pulses[pat->num_segments++] = intensity;
-			pat_pulses[pat->num_segments++] = 10-intensity;
-		}
-	}
+   if(intensity == 0) { // pause - we don't have to PWM that!
+      pat_pulses[pat->num_segments++] = 0;
+      pat_pulses[pat->num_segments++] = duration;
+   }
+   else if (intensity >= 10) { //intensity is at *or over* maximum, don't need to PWM that either
+      pat_pulses[pat->num_segments++] = duration;
+      pat_pulses[pat->num_segments++] = 0;
+   }
+   else{ //have to actually use PWM to fulfil the request
+      for(int i=0; i<pulses && pat->num_segments<MAX_PATTERN_SIZE-2; i++) {
+         pat_pulses[pat->num_segments++] = intensity;
+         pat_pulses[pat->num_segments++] = 10-intensity;
+      }
+   }
 
-	return pat;
+   return pat;
 }
 
 /*
  * Sends PWM pattern to standard Pebble SDK vibes_enqueue_custom_pattern
  */
 void vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat) {
-	VibePattern pat;
-	
-	pat.num_segments=0; //clear the pattern to start adding segments
-	for(unsigned int i=0; i<pwmPat->num_segments; i+=2) {
-		pwm_vibrate_add_pulse(&pat, pwmPat->durations[i], pwmPat->durations[i+1]);
-	}
-	pat.durations=pat_pulses;
-	vibes_enqueue_custom_pattern(pat);
+   VibePattern pat;
+   
+   pat.num_segments=0; //clear the pattern to start adding segments
+   for(unsigned int i=0; i<pwmPat->num_segments; i+=2) {
+      pwm_vibrate_add_pulse(&pat, pwmPat->durations[i], pwmPat->durations[i+1]);
+   }
+   pat.durations=pat_pulses;
+   vibes_enqueue_custom_pattern(pat);
 }
 
 /*
  * Helper function to add another pulse to a VibePatternPWM structure
  */
 VibePatternPWM * vibesPatternPWM_addpulse(VibePatternPWM *pat, uint32_t duration, uint32_t force) {
-	pat->durations[pat->num_segments++] = duration;
-	pat->durations[pat->num_segments++] = force;
-	return pat;
+   pat->durations[pat->num_segments++] = duration;
+   pat->durations[pat->num_segments++] = force;
+   return pat;
 }
