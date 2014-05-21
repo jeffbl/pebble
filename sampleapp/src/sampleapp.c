@@ -5,9 +5,10 @@ static Window *window;
 static TextLayer *text_layer;
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Select");
+	text_layer_set_text(text_layer, "Ramp");
   
-	static uint32_t segments[] = { 500, 1, 500, 2, 500, 3, 500, 4, 500, 5, 500, 6, 500, 7, 500, 8, 500, 9, 500, 10, 200, 0, 300, 5 };
+	// demonstrate a very straightforward vibration ramp
+	static uint32_t segments[] = { 500, 1, 500, 2, 500, 3, 500, 4, 500, 5, 500, 6, 500, 7, 500, 8, 500, 9, 500, 10 };
 	VibePatternPWM pwmPat = {
   		.durations = segments,
 		.num_segments = ARRAY_LENGTH(segments),
@@ -20,7 +21,25 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Down");
+	text_layer_set_text(text_layer, "Wobble");
+	
+	uint32_t segments[40];
+	VibePatternPWM pwmPat = {
+		.durations = segments,
+		.num_segments = 0, //pulseCount*2,
+	};
+	
+	// demonstrate use of vibesPatternPWM_addpulse
+   vibesPatternPWM_addpulse(&pwmPat, 300, 2);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 2);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 2);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 2);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
+
+	vibes_enqueue_custom_pwm_pattern(&pwmPat);
 }
 
 static void click_config_provider(void *context) {
@@ -34,7 +53,7 @@ static void window_load(Window *window) {
   GRect bounds = layer_get_bounds(window_layer);
 
   text_layer = text_layer_create((GRect) { .origin = { 0, 72 }, .size = { bounds.size.w, 20 } });
-  text_layer_set_text(text_layer, "Press select button fro vibration ramp");
+  text_layer_set_text(text_layer, "Press a button");
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
 }
