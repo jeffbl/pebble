@@ -43,7 +43,7 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
    vibesPatternPWM_addpulse(&pwmPat, 300, 6);
    vibesPatternPWM_addpulse(&pwmPat, 300, 10);
 
-	vibes_enqueue_custom_pwm_pattern(&pwmPat);
+   vibes_enqueue_custom_pwm_pattern(&pwmPat);
 }
 
 static void click_config_provider(void *context) {

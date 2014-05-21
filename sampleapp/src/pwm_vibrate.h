@@ -27,7 +27,7 @@ SOFTWARE.
 #include <pebble.h>
 
 /*
- * the minimum length of each PWM pulse in milliseconds DO NOT CHANGE THIS
+ * the total length of each PWM pulse (entire on/off cycle) in milliseconds DO NOT CHANGE THIS
  */
 #define MIN_PWM_PULSE_PERIOD 10
 
@@ -54,7 +54,7 @@ SOFTWARE.
  * Instead of alternating on and off,
  * the "durations" field of the struct instead contains duration/intensity alternating pairs.
  * Intensity ranges from 0-10, with 10 full intensity, and 0 no vibration
- * For example, durations "100 5 200 7 300 0 150 2" would output:
+ * For example, durations [100, 5, 200, 7, 300, 0, 150, 2] would output:
  * 	100ms pulse at intensity 5 (half)
  * 	200ms pulse at intensity 7 (70% of full intensity)
  * 	300ms pause
@@ -77,6 +77,6 @@ void vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat);
 
 
 /*
- * Helper function that takes a segments array and appends a duration/force tuple.
+ * Helper function that takes a VibePatternPWM and appends a duration/force tuple.
  */
 VibePatternPWM * vibesPatternPWM_addpulse(VibePatternPWM *pat, uint32_t duration, uint32_t force);
