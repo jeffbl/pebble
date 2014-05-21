@@ -31,20 +31,16 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
 	
 	// demonstrate use of vibesPatternPWM_addpulse
    vibesPatternPWM_addpulse(&pwmPat, 300, 1);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 3);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 5);
    vibesPatternPWM_addpulse(&pwmPat, 300, 2);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 4);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
    vibesPatternPWM_addpulse(&pwmPat, 300, 3);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 5);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 7);
    vibesPatternPWM_addpulse(&pwmPat, 300, 4);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
    vibesPatternPWM_addpulse(&pwmPat, 300, 5);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 7);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 7);
    vibesPatternPWM_addpulse(&pwmPat, 300, 9);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
    vibesPatternPWM_addpulse(&pwmPat, 300, 10);
 
 	vibes_enqueue_custom_pwm_pattern(&pwmPat);
