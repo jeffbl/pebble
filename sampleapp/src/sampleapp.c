@@ -5,15 +5,15 @@ static Window *window;
 static TextLayer *text_layer;
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-	text_layer_set_text(text_layer, "Ramp");
+   text_layer_set_text(text_layer, "Ramp");
   
-	// demonstrate a very straightforward vibration ramp
-	static uint32_t segments[] = { 500, 1, 500, 2, 500, 3, 500, 4, 500, 5, 500, 6, 500, 7, 500, 8, 500, 9, 500, 10 };
-	VibePatternPWM pwmPat = {
-  		.durations = segments,
-		.num_segments = ARRAY_LENGTH(segments),
-	};
-	vibes_enqueue_custom_pwm_pattern(&pwmPat);
+   // demonstrate a very straightforward vibration ramp
+   static uint32_t segments[] = { 500, 1, 500, 2, 500, 3, 500, 4, 500, 5, 500, 6, 500, 7, 500, 8, 500, 9, 500, 10 };
+   VibePatternPWM pwmPat = {
+      .durations = segments,
+      .num_segments = ARRAY_LENGTH(segments),
+   };
+   vibes_enqueue_custom_pwm_pattern(&pwmPat);
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -21,23 +21,31 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-	text_layer_set_text(text_layer, "Wobble");
+   text_layer_set_text(text_layer, "Wobble");
 	
-	uint32_t segments[40];
-	VibePatternPWM pwmPat = {
-		.durations = segments,
-		.num_segments = 0, //pulseCount*2,
-	};
+   uint32_t segments[40];
+   VibePatternPWM pwmPat = {
+      .durations = segments,
+      .num_segments = 0, //pulseCount*2,
+   };
 	
 	// demonstrate use of vibesPatternPWM_addpulse
+   vibesPatternPWM_addpulse(&pwmPat, 300, 1);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 3);
    vibesPatternPWM_addpulse(&pwmPat, 300, 2);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 4);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 3);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 5);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 4);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 5);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 7);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
    vibesPatternPWM_addpulse(&pwmPat, 300, 8);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 2);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 7);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 9);
    vibesPatternPWM_addpulse(&pwmPat, 300, 8);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 2);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 2);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 8);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 10);
 
 	vibes_enqueue_custom_pwm_pattern(&pwmPat);
 }

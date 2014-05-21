@@ -77,8 +77,6 @@ void vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat) {
  * Helper function to add another pulse to a VibePatternPWM structure
  */
 VibePatternPWM * vibesPatternPWM_addpulse(VibePatternPWM *pat, uint32_t duration, uint32_t force) {
-	//segments[pulse_number*2] = duration;
-	//segments[pulse_number*2 + 1] = force;
 	pat->durations[pat->num_segments++] = duration;
 	pat->durations[pat->num_segments++] = force;
 	return pat;
