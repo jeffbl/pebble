@@ -2,9 +2,9 @@
   "uuid": "cbe50e83-9ced-4cfa-99bc-72dddf4b9f12",
   "shortName": "sampleapp",
   "longName": "sampleapp",
-  "companyName": "MakeAwesomeHappen",
+  "companyName": "Jeff Blum",
   "versionCode": 1,
-  "versionLabel": "1.0.0",
+  "versionLabel": "1.0",
   "watchapp": {
     "watchface": false
   },

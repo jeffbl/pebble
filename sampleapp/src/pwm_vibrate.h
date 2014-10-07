@@ -42,9 +42,11 @@ SOFTWARE.
  * NOTE: Silent failure when truncating PWM pattern to this size
  * (e.g. if you have a long pattern, it may not play completely
  * in order to avoid going past end of this fixed-size buffer.
- * at 512*2, you get a max of about 5 seconds of total vibration.)
+ * at 400*2, you get a at least ~4 seconds of total vibration.)
+ * (Longer caused Pebble to reset when calling the native vibes API)
+ * Must be an even number!
  */
-#define MAX_PATTERN_SIZE 512*2   
+#define MAX_PATTERN_SIZE 400*2
 
 
 /*
@@ -72,11 +74,22 @@ typedef struct {
  *  Enqueues a VibePatternPWM, breaking the durations down into 
  *  individual PWM pulses and sending them through Pebble's
  *  normal vibes_enqueue_custom_pattern function
+ *
+ *  Return value == true :
+ *    maximum pattern size was reached or exceeded
+ *    (pattern may have been truncated...)
  */
-void vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat);
+bool vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat);
 
 
 /*
  * Helper function that takes a VibePatternPWM and appends a duration/force tuple.
  */
 VibePatternPWM * vibesPatternPWM_addpulse(VibePatternPWM *pat, uint32_t duration, uint32_t force);
+
+/*
+ * Fills passed buffer with string containing vibe pattern
+ * Useful for debugging
+ * If bufSize is not large enough to contain everything, it terminates the string with "!"
+ */
+char * pwmPat_asStr(VibePatternPWM *pat, char *buf, uint32_t bufSize);

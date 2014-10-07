@@ -5,24 +5,8 @@ static Window *window;
 static TextLayer *text_layer;
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-   text_layer_set_text(text_layer, "Ramp");
+   text_layer_set_text(text_layer, "Wobble up");
   
-   // demonstrate a very straightforward vibration ramp
-   static uint32_t segments[] = { 500, 1, 500, 2, 500, 3, 500, 4, 500, 5, 500, 6, 500, 7, 500, 8, 500, 9, 500, 10 };
-   VibePatternPWM pwmPat = {
-      .durations = segments,
-      .num_segments = ARRAY_LENGTH(segments),
-   };
-   vibes_enqueue_custom_pwm_pattern(&pwmPat);
-}
-
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Up");
-}
-
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-   text_layer_set_text(text_layer, "Wobble");
-	
    uint32_t segments[40];
    VibePatternPWM pwmPat = {
       .durations = segments,
@@ -46,6 +30,34 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
    vibes_enqueue_custom_pwm_pattern(&pwmPat);
 }
 
+static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
+  text_layer_set_text(text_layer, "Ramp up");
+
+   // demonstrate a straightforward vibration ramp
+   static uint32_t segments[] = { 300, 1, 300, 2, 300, 3, 300, 4, 300, 5, 300, 6, 300, 7, 300, 8, 300, 9, 300, 10 };
+   VibePatternPWM pwmPat = {
+      .durations = segments,
+      .num_segments = ARRAY_LENGTH(segments),
+   };
+   vibes_enqueue_custom_pwm_pattern(&pwmPat);
+}
+
+static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
+   text_layer_set_text(text_layer, "Ramp down");
+	
+   // demonstrate a straightforward vibration ramp
+   static uint32_t segments[] = { 300, 10, 300, 9, 300, 8, 300, 7, 300, 6, 300, 5, 300, 4, 300, 3, 300, 2, 300*10, 1 }; //note very long final pulse
+   VibePatternPWM pwmPat = {
+      .durations = segments,
+      .num_segments = ARRAY_LENGTH(segments),
+   };
+   
+   bool isFull = vibes_enqueue_custom_pwm_pattern(&pwmPat);
+   if(isFull) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Note: Due to the very long final pulse, it will not render the full duration");
+   }
+}
+
 static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
   window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
@@ -56,8 +68,8 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  text_layer = text_layer_create((GRect) { .origin = { 0, 72 }, .size = { bounds.size.w, 20 } });
-  text_layer_set_text(text_layer, "Press a button");
+  text_layer = text_layer_create((GRect) { .origin = { 0, 40 }, .size = { bounds.size.w, 80 } });
+  text_layer_set_text(text_layer, "Up: ramp up\nSelect: wobble\nDown: ramp down");
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
 }
