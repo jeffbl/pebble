@@ -107,12 +107,12 @@ VibePatternPWM * vibesPatternPWM_addpulse(VibePatternPWM *pat, uint32_t duration
  */
 char * pwmPat_asStr(VibePatternPWM *pat, char *buf, uint32_t bufSize) {
    strcpy(buf, "");
-	for(unsigned int i=0; i<pat->num_segments; i++) {		   
+   for(unsigned int i=0; i<pat->num_segments; i++) {         
       char numStr[16];
-	   snprintf(numStr, 16, " %d", (unsigned int)pat->durations[i]);
-	   if(i%2==1) {
-	      strcat(numStr, " |");
-	   }
+      snprintf(numStr, 16, " %d", (unsigned int)pat->durations[i]);
+      if(i%2==1) {
+         strcat(numStr, " |");
+      }
 
       uint32_t slen = strlen(buf);
       if(slen + strlen(numStr) < bufSize) {
@@ -126,6 +126,6 @@ char * pwmPat_asStr(VibePatternPWM *pat, char *buf, uint32_t bufSize) {
          buf[bufSize-2] = 0;
          strcat(buf, "!");
       }
-	}
-	return buf;
+   }
+   return buf;
 }
