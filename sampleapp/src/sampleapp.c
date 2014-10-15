@@ -15,16 +15,14 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 	
    // demonstrate use of vibesPatternPWM_addpulse
    vibesPatternPWM_addpulse(&pwmPat, 300, 1);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 5);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
    vibesPatternPWM_addpulse(&pwmPat, 300, 2);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 3);
    vibesPatternPWM_addpulse(&pwmPat, 300, 7);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 4);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 3);
    vibesPatternPWM_addpulse(&pwmPat, 300, 8);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 5);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 4);
    vibesPatternPWM_addpulse(&pwmPat, 300, 9);
-   vibesPatternPWM_addpulse(&pwmPat, 300, 6);
+   vibesPatternPWM_addpulse(&pwmPat, 300, 5);
    vibesPatternPWM_addpulse(&pwmPat, 300, 10);
 
    vibes_enqueue_custom_pwm_pattern(&pwmPat);
@@ -39,7 +37,11 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
       .durations = segments,
       .num_segments = ARRAY_LENGTH(segments),
    };
-   vibes_enqueue_custom_pwm_pattern(&pwmPat);
+   
+   //Could just call vibes_enqueue_custom_pwm_pattern,
+   //but will instead do it in two steps - prepare and play:
+   vibes_prepare_custom_pwm_pattern(&pwmPat); //Note this will not cause it to actually vibrate!
+   vibes_play_current_custom_pwm_pattern(); //Now it actually plays the pattern that was "prepared"
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {

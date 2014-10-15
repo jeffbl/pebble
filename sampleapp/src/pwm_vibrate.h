@@ -29,12 +29,13 @@ SOFTWARE.
 /*
  * the total length of each PWM pulse (entire on/off cycle) in milliseconds DO NOT CHANGE THIS
  */
-#define MIN_PWM_PULSE_PERIOD 10
+#define MIN_PWM_PULSE_PERIOD           10
 
 /*
  * increasing extends the pulse period, making it more "choppy" but allowing longer more complicated patterns
  */
-#define PWM_PULSE_PERIOD_MULTIPLIER 1
+#define PWM_PULSE_PERIOD_MULTIPLIER    1
+#define PWM_PULSE_PERIOD               MIN_PWM_PULSE_PERIOD*PWM_PULSE_PERIOD_MULTIPLIER
 
 /*
  * max number of vibration pulses * 2 AFTER it is broken into PWM.
@@ -42,11 +43,11 @@ SOFTWARE.
  * NOTE: Silent failure when truncating PWM pattern to this size
  * (e.g. if you have a long pattern, it may not play completely
  * in order to avoid going past end of this fixed-size buffer.
- * at 400*2, you get a at least ~4 seconds of total vibration.)
+ * at 300*2, you get a at least ~3 seconds of total vibration.)
  * (Longer caused Pebble to reset when calling the native vibes API)
  * Must be an even number!
  */
-#define MAX_PATTERN_SIZE 400*2
+#define MAX_PATTERN_SIZE 300*2
 
 
 /*
@@ -78,9 +79,26 @@ typedef struct {
  *  Return value == true :
  *    maximum pattern size was reached or exceeded
  *    (pattern may have been truncated...)
+ *
+ *  Note this simply calls two functions one after the other:
+ *    vibes_prepare_custom_pwm_pattern
+ *    vibes_play_current_custom_pwm_pattern
  */
 bool vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat);
 
+
+/*
+ *  Prepare a VibePatternPWM for playback, but don't actually play it
+ *  Return value is the same as for vibes_enqueue_custom_pwm_pattern
+ */
+bool vibes_prepare_custom_pwm_pattern(VibePatternPWM *pwmPat);
+ 
+/*
+ *  Replay the last prepared or played pattern
+ *  Useful since it will not re-parse the pattern to make it into
+ *  a native call, making it start faster
+ */
+void vibes_play_current_custom_pwm_pattern();
 
 /*
  * Helper function that takes a VibePatternPWM and appends a duration/force tuple.

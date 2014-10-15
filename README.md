@@ -9,6 +9,12 @@ Lets app control intensity of pebble vibrator in 10 increments
 
 revision history
 ----------------
+### 15OCT2014  v1.2
+* Further reduced maximum vibe pattern duration to around 3 seconds due to watch reset in native pebble vibe API with longer durations
+* New vibes_prepare_custom_pwm_pattern function that creates the PWM pattern, but does not play it.
+This is useful, for example, to get better control over the delay between triggering the vibration and when the motor actually starts.
+The pattern can be prepared in advance, then triggered more quickly when it actually needs to be played.
+* New vibes_play_current_custom_pwm_pattern function that plays the most recently prepared pattern, or repeats the previous vibration
 
 ### 06OCT2014  v1.1
 * Reduced maximum size of PWM structure since long patterns were causing native pebble vibes_enqueue_custom_pattern() to reset the watch

@@ -24,14 +24,16 @@ SOFTWARE.
 
 #include "pwm_vibrate.h"
 
-#define PWM_PULSE_PERIOD       MIN_PWM_PULSE_PERIOD * PWM_PULSE_PERIOD_MULTIPLIER //the actual pulse period in ms
-
 /*
  * Allocate one global buffer for the long pwm pattern to be handed to native API.
  * This is ugly.
  * TODO:  dynamically calculate max to be more space efficient
  */
-static uint32_t pat_pulses[MAX_PATTERN_SIZE];
+static uint32_t gPat_pulses[MAX_PATTERN_SIZE];
+VibePattern gPat = {
+   .num_segments=0, //clear the pattern to start adding segments
+   .durations=gPat_pulses //hack since this is static in a VibePattern
+};
 
 /*
  * Takes a VibePattern with the duration in the pwm format and appends on new pulses for the passed duration and intensity,
@@ -39,32 +41,32 @@ static uint32_t pat_pulses[MAX_PATTERN_SIZE];
  * Internal function - not exposed to API users
  */
 static bool append_pulse(VibePattern *pat, int duration, int intensity) {
-   intensity *= PWM_PULSE_PERIOD_MULTIPLIER;      // adjust by multiplier if it is not using the minimum intensity
    int pulses = (duration/PWM_PULSE_PERIOD);      // one pulse == one on/off cycle
    //APP_LOG(APP_LOG_LEVEL_DEBUG, "pwmVibrate intensity %d duration %d pulses %d", intensity, duration, pulses);
    
    //only add pulse if the duration is non-zero and there is still room in the pattern
    if(duration != 0 && pat->num_segments <= MAX_PATTERN_SIZE-2 ) {
       if(intensity == 0) { // pause - we don't have to PWM that!
-         pat_pulses[pat->num_segments++] = 0;
-         pat_pulses[pat->num_segments++] = duration;
+         gPat_pulses[pat->num_segments++] = 0;
+         gPat_pulses[pat->num_segments++] = duration;
       }
       else if (intensity >= 10) { //intensity is at *or over* maximum, don't need to PWM that either
-         pat_pulses[pat->num_segments++] = duration;
-         pat_pulses[pat->num_segments++] = 0;
+         gPat_pulses[pat->num_segments++] = duration;
+         gPat_pulses[pat->num_segments++] = 0;
       }
       else{ //have to actually use PWM to fulfil the request
-         int offtime=10-intensity;
+         int on_time =intensity * PWM_PULSE_PERIOD_MULTIPLIER; // adjust by multiplier if case not using MIN_PWM_INTENSITY
+         int off_time=PWM_PULSE_PERIOD-on_time;
          for(int i=0; i<pulses && pat->num_segments <= MAX_PATTERN_SIZE-2; i++) {
-            pat_pulses[pat->num_segments++] = intensity;
-            pat_pulses[pat->num_segments++] = offtime;
+            gPat_pulses[pat->num_segments++] = on_time;
+            gPat_pulses[pat->num_segments++] = off_time;
          }
       }
    }
    
    //return whether there is still room in the pattern
    if(pat->num_segments == MAX_PATTERN_SIZE) {
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "pwmVibrate pattern is full - ignoring adding more pulses");
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "pwmVibrate pattern full - ignoring more pulses: %lu", MAX_PATTERN_SIZE-pat->num_segments);
       return true; //ALL FULL!
    }
    else {
@@ -73,23 +75,33 @@ static bool append_pulse(VibePattern *pat, int duration, int intensity) {
    }
 }
 
+void vibes_play_current_custom_pwm_pattern() {
+   vibes_cancel(); //unpredictable behaviour if don't clear out any running vibes first...
+   vibes_enqueue_custom_pattern(gPat);
+}
+
+bool vibes_prepare_custom_pwm_pattern(VibePatternPWM *pwmPat) {
+   bool isFull=false;
+   
+   vibes_cancel(); //bad idea to write to the global pattern while it is being used by an existing vibe
+                   //TODO: create double-buffer so can be preparing one while another is playing?
+                     
+   
+   gPat.num_segments = 0;
+   for(unsigned int i=0; i<pwmPat->num_segments; i+=2) {
+      isFull = append_pulse(&gPat, pwmPat->durations[i], pwmPat->durations[i+1]);
+      if(isFull) break; //no sense trying to add more if it is full...
+   }
+   
+   return isFull;
+}
+
 /*
  * Sends PWM pattern to standard Pebble SDK vibes_enqueue_custom_pattern
  */
 bool vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat) {
-   bool isFull=false;
-
-   VibePattern pat;
-   pat.num_segments=0; //clear the pattern to start adding segments
-   pat.durations=pat_pulses; //hack since this is not writable in a VibePattern
-   
-   for(unsigned int i=0; i<pwmPat->num_segments; i+=2) {
-      isFull = append_pulse(&pat, pwmPat->durations[i], pwmPat->durations[i+1]);
-      if(isFull) break; //no sense trying to add more if it is full...
-   }
-   
-   vibes_enqueue_custom_pattern(pat);
-   
+   bool isFull = vibes_prepare_custom_pwm_pattern(pwmPat);
+   vibes_play_current_custom_pwm_pattern();
    return isFull;
 }
 
