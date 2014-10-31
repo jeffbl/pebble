@@ -6,6 +6,10 @@ Pebble smartwatch utility code
 pwm_vibrate:
 Lets app control intensity of pebble vibrator in 10 increments
 
+WARNING: Long patterns will reset the Pebble. This is a known bug they are fixing (hopefully soon).
+Once fixed, the max duration will be returned to 10 seconds in the library.
+Note that the Pebble may still reset even with short patterns (I have not tested enough to put a bound on it).
+See http://forums.getpebble.com/discussion/comment/122761
 
 revision history
 ----------------
