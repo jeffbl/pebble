@@ -40,14 +40,14 @@ SOFTWARE.
 /*
  * max number of vibration pulses * 2 AFTER it is broken into PWM.
  * always uses this number of bytes (inefficient...)
- * NOTE: Silent failure when truncating PWM pattern to this size
  * (e.g. if you have a long pattern, it may not play completely
  * in order to avoid going past end of this fixed-size buffer.
- * at 300*2, you get a at least ~3 seconds of total vibration.)
- * (Longer caused Pebble to reset when calling the native vibes API)
- * Must be an even number!
+ * Currently set to allow at least 5 seconds of total vibration)
+ *
+ * NOTE: If the total vibration time exceeds the pebble 10 second max
+ *       it will just truncate silently
  */
-#define MAX_PATTERN_SIZE 300*2
+#define MAX_PATTERN_SIZE 512*2
 
 
 /*

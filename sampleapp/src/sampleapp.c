@@ -33,6 +33,7 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 
    // demonstrate a straightforward vibration ramp
    static uint32_t segments[] = { 300, 1, 300, 2, 300, 3, 300, 4, 300, 5, 300, 6, 300, 7, 300, 8, 300, 9, 300, 10 };
+   //static uint32_t segments[] = { 100, 2, 1000, 0, 100, 10, 1000, 0, 100, 2, 1000, 0, 100, 10, 1000, 0, 100, 2 };
    VibePatternPWM pwmPat = {
       .durations = segments,
       .num_segments = ARRAY_LENGTH(segments),

@@ -60,6 +60,7 @@ static bool append_pulse(VibePattern *pat, int duration, int intensity) {
          for(int i=0; i<pulses && pat->num_segments <= MAX_PATTERN_SIZE-2; i++) {
             gPat_pulses[pat->num_segments++] = on_time;
             gPat_pulses[pat->num_segments++] = off_time;
+            //APP_LOG(APP_LOG_LEVEL_DEBUG, "debug: pwm pulse dur=%u int=%u", (uint)on_time, (uint)off_time);
          }
       }
    }
