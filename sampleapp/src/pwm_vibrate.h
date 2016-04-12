@@ -53,7 +53,7 @@ SOFTWARE.
 /*
  * Pebble VibePatternPWM structure, essentially like a normal VibePattern
  * but the durations is not declared const, so that helper functions are simplified.
- * 
+ *
  * Instead of alternating on and off,
  * the "durations" field of the struct instead contains duration/intensity alternating pairs.
  * Intensity ranges from 0-10, with 10 full intensity, and 0 no vibration
@@ -62,7 +62,7 @@ SOFTWARE.
  * 	200ms pulse at intensity 7 (70% of full intensity)
  * 	300ms pause
  * 	150ms pulse at intensity 2 (very low)
- * 
+ *
  * NOTE: durations are floored (rounded down) to 10ms boundaries.
  */
 typedef struct {
@@ -72,7 +72,7 @@ typedef struct {
 
 
 /*
- *  Enqueues a VibePatternPWM, breaking the durations down into 
+ *  Enqueues a VibePatternPWM, breaking the durations down into
  *  individual PWM pulses and sending them through Pebble's
  *  normal vibes_enqueue_custom_pattern function
  *
@@ -92,7 +92,7 @@ bool vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat);
  *  Return value is the same as for vibes_enqueue_custom_pwm_pattern
  */
 bool vibes_prepare_custom_pwm_pattern(VibePatternPWM *pwmPat);
- 
+
 /*
  *  Replay the last prepared or played pattern
  *  Useful since it will not re-parse the pattern to make it into
@@ -104,6 +104,11 @@ void vibes_play_current_custom_pwm_pattern();
  * Helper function that takes a VibePatternPWM and appends a duration/force tuple.
  */
 VibePatternPWM * vibesPatternPWM_addpulse(VibePatternPWM *pat, uint32_t duration, uint32_t force);
+
+/*
+ * Returns an int with number of milliseconds the entire pattern will take, including 0 intensity (pause) pulses
+ */
+int vibesPatternPWM_get_duration(VibePatternPWM *pat);
 
 /*
  * Fills passed buffer with string containing vibe pattern
