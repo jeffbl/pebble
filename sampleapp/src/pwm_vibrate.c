@@ -24,6 +24,14 @@ SOFTWARE.
 
 #include "pwm_vibrate.h"
 
+uint64_t gTimeVibesStop=0;
+uint64_t ms_since_epoch() {
+   time_t seconds;
+   uint16_t ms = time_ms(&seconds, NULL);
+
+   return ((uint64_t)seconds*1000) + (uint64_t)ms;
+}
+
 /*
  * Allocate one global buffer for the long pwm pattern to be handed to native API.
  * This is ugly.
@@ -76,6 +84,16 @@ static bool append_pulse(VibePattern *pat, int duration, int intensity) {
    }
 }
 
+// fudge is to make sure the motor has spun down - how long should we wait for that?
+bool vibes_isVibing(int fudge) {
+   if(ms_since_epoch() > gTimeVibesStop+fudge) {
+      return false;
+   }
+   else {
+      return true;
+   }
+}
+
 void vibes_play_current_custom_pwm_pattern() {
    vibes_cancel(); //unpredictable behaviour if don't clear out any running vibes first...
    vibes_enqueue_custom_pattern(gPat);
@@ -102,6 +120,7 @@ bool vibes_prepare_custom_pwm_pattern(VibePatternPWM *pwmPat) {
 bool vibes_enqueue_custom_pwm_pattern(VibePatternPWM *pwmPat) {
    bool isFull = vibes_prepare_custom_pwm_pattern(pwmPat);
    vibes_play_current_custom_pwm_pattern();
+   gTimeVibesStop = ms_since_epoch() + vibesPatternPWM_get_duration(pwmPat); //just after sent to give a bit of fudge time for spindown
    return isFull;
 }
 
@@ -123,6 +142,11 @@ int vibesPatternPWM_get_duration(VibePatternPWM *pat) {
     duration += pat->durations[i];
   }
   return duration;
+}
+
+VibePatternPWM * vibesPatternPWM_clear(VibePatternPWM *pat) {
+    pat->num_segments=0;
+    return pat;
 }
 
 /*

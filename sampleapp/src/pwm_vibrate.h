@@ -63,13 +63,15 @@ SOFTWARE.
  * 	300ms pause
  * 	150ms pulse at intensity 2 (very low)
  *
- * NOTE: durations are floored (rounded down) to 10ms boundaries.
+ * NOTE: durations are floored (rounded down) to 10ms increments.
  */
 typedef struct {
   uint32_t *durations;
   uint32_t num_segments;
 } VibePatternPWM;
 
+uint64_t ms_since_epoch();
+bool vibes_isVibing();
 
 /*
  *  Enqueues a VibePatternPWM, breaking the durations down into
@@ -109,6 +111,11 @@ VibePatternPWM * vibesPatternPWM_addpulse(VibePatternPWM *pat, uint32_t duration
  * Returns an int with number of milliseconds the entire pattern will take, including 0 intensity (pause) pulses
  */
 int vibesPatternPWM_get_duration(VibePatternPWM *pat);
+
+/*
+ * Clear the pattern so it can be built again using addpulse
+ */
+VibePatternPWM * vibesPatternPWM_clear(VibePatternPWM *pat);
 
 /*
  * Fills passed buffer with string containing vibe pattern
